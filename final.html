@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Project</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f4f6f9;
+    --card:#fff;
+    --accent:#2c7be5;
+    --muted:#6b7280;
+    --danger:#e05252;
+    --text:#0f1724;
+    --sidebar-bg:#0b2545;
+    --sidebar-text:#fff;
+    --transition: all 0.3s ease;
+  }
+  body.dark {
+    --bg:#1a202c;
+    --card:#2d3748;
+    --accent:#63b3ed;
+    --muted:#a0aec0;
+    --danger:#f56565;
+    --text:#e2e8f0;
+    --sidebar-bg:#2a4365;
+    --sidebar-text:#e2e8f0;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:'Inter', Arial, Helvetica, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    transition: var(--transition);
+  }
+  /* Layout */
+  .app {display:flex;min-height:100vh}
+  .sidebar {
+    width:260px;
+    background:var(--sidebar-bg);
+    color:var(--sidebar-text);
+    padding:20px;
+    flex-shrink:0;
+    transition: var(--transition);
+  }
+  .sidebar h2{margin:0 0 16px;font-weight:600}
+  .sidebar button, .sidebar input {width:100%;transition: var(--transition);}
+  .content {flex:1;padding:0;background:var(--bg);transition: var(--transition);}
+  .content-inner {padding:20px;}
+  .top {display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+  .title {font-size:20px;margin:0}
+  .controls {display:flex;gap:10px;align-items:center}
+  .btn {
+    padding:8px 12px;
+    background:var(--accent);
+    color:#fff;
+    border:0;
+    border-radius:6px;
+    cursor:pointer;
+    transition: var(--transition);
+  }
+  .btn:hover {filter: brightness(1.1);}
+  .link-btn{
+    background:transparent;
+    color:var(--sidebar-text);
+    border:0;
+    text-align:left;
+    padding:8px 0;
+    cursor:pointer;
+    transition: var(--transition);
+  }
+  .link-btn:hover {color: var(--accent);}
+
+  /* login */
+  .login-screen{display:flex;align-items:center;justify-content:center;height:100vh}
+  .login-card{
+    width:320px;
+    padding:28px;
+    border-radius:12px;
+    background:var(--card);
+    box-shadow:0 8px 30px rgba(2,6,23,0.08);
+    text-align:center;
+    transition: var(--transition);
+  }
+  .login-card h1{margin:0 0 12px;font-size:20px}
+  .login-card input{
+    width:100%;
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #e6e9ef;
+    margin:8px 0;
+    background:var(--card);
+    color:var(--text);
+    transition: var(--transition);
+  }
+
+  /* gallery */
+  .gallery {display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+  .thumb {
+    background:var(--card);
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:0 6px 18px rgba(2,6,23,0.06);
+    position:relative;
+    transition: var(--transition);
+  }
+  .thumb .placeholder{width:100%;height:140px;background:#e6eefc;display:flex;align-items:center;justify-content:center}
+  .thumb img{width:100%;height:140px;object-fit:cover;display:block;cursor:pointer}
+  .thumb .caption{padding:10px;font-size:14px;color:var(--muted);transition: var(--transition);}
+
+  /* modal */
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:1200}
+  .modal.active{display:flex}
+  .modal-card{
+    background:var(--card);
+    padding:14px;
+    border-radius:10px;
+    max-width:92vw;
+    max-height:88vh;
+    overflow:auto;
+    transition: var(--transition);
+  }
+  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .modal-body{display:flex;gap:12px}
+  .image-wrap{position:relative;max-width:72vw;max-height:70vh;display:inline-block}
+  .preview-img{display:block;max-width:100%;max-height:70vh}
+  .annotation-rect{position:absolute;border:2px dashed var(--danger);background:rgba(224,82,82,0.12);pointer-events:none}
+  .annotation-label{
+    position:absolute;
+    background:var(--danger);
+    color:#fff;
+    padding:2px 6px;
+    border-radius:6px;
+    font-size:12px;
+    transform:translateY(-120%);
+  }
+
+  /* saved/list */
+  .saved-list{margin-top:12px}
+  .saved-item{
+    background:var(--card);
+    border-radius:8px;
+    padding:8px;
+    margin-bottom:8px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    transition: var(--transition);
+  }
+  .saved-item img {
+    width:60px;
+    height:40px;
+    object-fit:cover;
+    border-radius:4px;
+  }
+  .saved-item span{flex:1}
+  .saved-item:hover {background: var(--accent); color: #fff;}
+  .saved-item:hover .btn {background: #fff; color: var(--text);}
+
+  /* top search bar */
+  .search-bar {
+    background: var(--card);
+    padding: 12px 20px;
+    border-bottom: 1px solid #e6e9ef;
+    transition: var(--transition);
+  }
+  .top-search-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  .search-bar input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #e6e9ef;
+    background: var(--card);
+    color: var(--text);
+    font-size: 14px;
+    transition: var(--transition);
+  }
+  .search-bar input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(44, 123, 229, 0.2);
+  }
+
+  /* theme button */
+  #themeSwitch {position: relative;}
+  #themeSwitch::after {
+    content: attr(data-theme-text);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 12px;
+  }
+
+  /* responsive */
+  @media (max-width:880px){
+    .sidebar{display:none}
+    .content{margin:0}
+  }
+</style>
+</head>
+<body>
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <h1>Sign in</h1>
+    <input id="loginUser" placeholder="Username" value="user" />
+    <input id="loginPass" placeholder="Password" type="password" value="1234" />
+    <div style="height:10px"></div>
+    <button id="btnLogin" class="btn">Log in</button>
+    <p id="loginMsg" style="color:#c0392b;margin-top:8px"></p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="app" style="display:none">
+  <aside class="sidebar">
+    <h2>Menu</h2>
+    <div style="margin-top:18px">
+      <button id="goHome" class="link-btn">Home</button>
+      <button id="goGallery" class="link-btn">Gallery</button>
+      <button id="goSaved" class="link-btn">Saved Annotations</button>
+      <div style="height:12px"></div>
+      <button id="logout" class="link-btn">Logout</button>
+    </div>
+    <div style="margin-top:18px;color:#bcd4ff;font-size:13px">Theme</div>
+    <div style="margin-top:6px">
+      <button id="themeSwitch" class="btn" style="background:#0b2545" data-theme-text="Dark Mode"></button>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="content-inner">
+      <div class="search-bar top-search-bar" id="homeSearch" style="display:none">
+        <input id="homeSearchBar" placeholder="Search annotations..." />
+      </div>
+      <div class="search-bar top-search-bar" id="savedSearch" style="display:none">
+        <input id="savedSearchBar" placeholder="Search annotations..." />
+      </div>
+      <div class="top">
+        <div><h3 id="pageTitle">Home</h3></div>
+        <div class="controls">
+          <button id="btnNew" class="btn" style="display:none">New</button>
+        </div>
+      </div>
+
+      <section id="homeView">
+        <h4>Welcome</h4>
+        <p>Welcome to this interactive image annotation platform, designed to streamline your workflow with a clean and intuitive interface. Explore a curated collection of images, each available for detailed viewing and annotation to suit your needs.</p>
+        <p>The application offers a robust gallery feature, where you can browse images with efficient lazy loading to ensure smooth performance. Click any image to open a full-size preview, complete with tools to draw rectangular annotations or add text notes directly on the image.</p>
+        <p>All annotations are saved locally, allowing you to edit or delete them at any time. Use the search bar above to quickly find specific annotations, or navigate to the "Saved Annotations" section to review and manage your work. Customize your experience with light and dark themes for optimal comfort.</p>
+      </section>
+
+      <section id="galleryView" style="display:none">
+       
+        <div class="search-bar" id="gallerySearch">
+          <input id="gallerySearchBar" placeholder="Search annotations..." />
+        </div>
+        <div id="grid" class="gallery" aria-live="polite"></div>
+        <div></div>
+      </section>
+
+      <section id="savedView" style="display:none">
+        <h4>Saved Annotations</h4>
+        <div id="savedList" class="saved-list"></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- PREVIEW / ANNOTATION MODAL -->
+<div id="modal" class="modal" role="dialog" aria-hidden="true">
+  <div class="modal-card" role="document">
+    <div class="modal-head">
+      <div><strong id="modalTitle">Preview</strong></div>
+      <div>
+        <button id="closeModal" class="btn" style="background:#666">Close</button>
+      </div>
+    </div>
+
+    <div class="modal-body">
+      <div class="image-wrap">
+        <div class="image-wrap-inner image-wrap-inner--container" style="position:relative">
+          <div class="image-wrap" id="imageContainer">
+            <img id="previewImg" class="preview-img" src="" alt="preview">
+          </div>
+        </div>
+      </div>
+
+      <div style="min-width:260px">
+        <div style="margin-bottom:8px">
+          <label for="annotationText">Add text annotation</label>
+          <input id="annotationText" placeholder="(optional) Enter text and press Save" style="width:100%;padding:8px;border-radius:6px;border:1px solid #e6e9ef"/>
+          <div style="height:8px"></div>
+          <button id="saveTextBtn" class="btn">Save Text</button>
+        </div>
+
+        <div style="margin-top:12px">
+          <strong>Annotations for this image</strong>
+          <div id="annotationList" style="margin-top:8px;max-height:380px;overflow:auto"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- Data & helpers ---------- */
+const IMAGE_SET = [
+  { id: "img-1015", src: "https://picsum.photos/id/1015/1200/800", thumb: "https://picsum.photos/id/1015/600/400", title: "Mountain lake" },
+  { id: "img-1016", src: "https://picsum.photos/id/1016/1200/800", thumb: "https://picsum.photos/id/1016/600/400", title: "Coastline" },
+  { id: "img-1020", src: "https://picsum.photos/id/1020/1200/800", thumb: "https://picsum.photos/id/1020/600/400", title: "Forest path" },
+  { id: "img-1024", src: "https://picsum.photos/id/1024/1200/800", thumb: "https://picsum.photos/id/1024/600/400", title: "Seaside" },
+  { id: "img-1035", src: "https://picsum.photos/id/1035/1200/800", thumb: "https://picsum.photos/id/1035/600/400", title: "Field" },
+  { id: "img-1040", src: "https://picsum.photos/id/1040/1200/800", thumb: "https://picsum.photos/id/1040/600/400", title: "Rocks" },
+  { id: "img-1043", src: "https://picsum.photos/id/1043/1200/800", thumb: "https://picsum.photos/id/1043/600/400", title: "Valley" },
+  { id: "img-1050", src: "https://picsum.photos/id/1050/1200/800", thumb: "https://picsum.photos/id/1050/600/400", title: "Waves" }
+];
+
+// storage helpers
+function loadAnnotations() {
+  try { return JSON.parse(localStorage.getItem("gallery_annotations") || "[]"); }
+  catch(e){ return []; }
+}
+function saveAnnotations(list) {
+  localStorage.setItem("gallery_annotations", JSON.stringify(list));
+}
+let annotations = loadAnnotations();
+
+// theme persistence
+function loadTheme() {
+  const theme = localStorage.getItem("theme") || "light";
+  document.body.classList.toggle("dark", theme === "dark");
+  updateThemeButton(theme);
+}
+function saveTheme(theme) {
+  localStorage.setItem("theme", theme);
+}
+function updateThemeButton(theme) {
+  const themeSwitch = document.getElementById("themeSwitch");
+  if (themeSwitch) {
+    themeSwitch.setAttribute("data-theme-text", theme === "dark" ? "Light Mode" : "Dark Mode");
+  }
+}
+
+/* ---------- UI refs ---------- */
+document.addEventListener("DOMContentLoaded", () => {
+  const loginScreen = document.getElementById("loginScreen");
+  const btnLogin = document.getElementById("btnLogin");
+  const loginMsg = document.getElementById("loginMsg");
+  const app = document.getElementById("app");
+  const goHome = document.getElementById("goHome");
+  const goGallery = document.getElementById("goGallery");
+  const goSaved = document.getElementById("goSaved");
+  const logoutBtn = document.getElementById("logout");
+  const pageTitle = document.getElementById("pageTitle");
+
+  const homeView = document.getElementById("homeView");
+  const galleryView = document.getElementById("galleryView");
+  const savedView = document.getElementById("savedView");
+
+  const grid = document.getElementById("grid");
+  const homeSearchBar = document.getElementById("homeSearchBar");
+  const gallerySearchBar = document.getElementById("gallerySearchBar");
+  const savedSearchBar = document.getElementById("savedSearchBar");
+
+  const modal = document.getElementById("modal");
+  const closeModal = document.getElementById("closeModal");
+  const previewImg = document.getElementById("previewImg");
+  const annotationText = document.getElementById("annotationText");
+  const saveTextBtn = document.getElementById("saveTextBtn");
+  const annotationList = document.getElementById("annotationList");
+
+  // Load theme on page load
+  loadTheme();
+
+  /* ---------- Login ---------- */
+  btnLogin.addEventListener("click", () => {
+    const user = document.getElementById("loginUser").value.trim();
+    const pass = document.getElementById("loginPass").value.trim();
+    if (user === "user" && pass === "1234") {
+      loginScreen.style.display = "none";
+      app.style.display = "flex";
+      showPage("gallery");
+      renderGallery();
+    } else {
+      loginMsg.innerText = "Invalid credentials — hint: user / 1234";
+    }
+  });
+  logoutBtn.addEventListener("click", () => location.reload());
+
+  /* ---------- Navigation ---------- */
+  goHome.addEventListener("click", () => { showPage("home"); renderSearchResults(""); });
+  goGallery.addEventListener("click", () => { showPage("gallery"); renderGallery(); renderSearchResults(""); });
+  goSaved.addEventListener("click", () => { showPage("saved"); renderSavedList(); renderSearchResults(""); });
+
+  function showPage(page){
+    if (pageTitle) {
+      pageTitle.innerText = page.charAt(0).toUpperCase()+page.slice(1);
+    } else {
+      console.warn("pageTitle element not found");
+    }
+    homeView.style.display = page==="home"?"block":"none";
+    galleryView.style.display = page==="gallery"?"block":"none";
+    savedView.style.display = page==="saved"?"block":"none";
+    document.getElementById("homeSearch").style.display = page==="home"?"block":"none";
+    document.getElementById("gallerySearch").style.display = page==="gallery"?"block":"none";
+    document.getElementById("savedSearch").style.display = page==="saved"?"block":"none";
+    homeSearchBar.value = "";
+    gallerySearchBar.value = "";
+    savedSearchBar.value = "";
+  }
+
+  /* ---------- Gallery (lazy thumbnails) ---------- */
+  function makePlaceholderSVG(w=600,h=400,text="Loading…"){
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}'><rect width='100%' height='100%' fill='#e6eefc'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='#6b7280' font-family='Arial' font-size='20'>${text}</text></svg>`;
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+  }
+  function renderGallery(filter = "") {
+    grid.innerHTML = "";
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(ent => {
+        if(ent.isIntersecting){
+          const img = ent.target.querySelector("img[data-src]");
+          if(img){
+            const real = img.dataset.src;
+            img.onload = () => { img.classList.add("loaded"); };
+            img.onerror = () => { img.src = makePlaceholderSVG(600,400,"Unavailable"); }
+            img.src = real;
+            img.removeAttribute("data-src");
+          }
+          obs.unobserve(ent.target);
+        }
+      });
+    }, {rootMargin:"200px"});
+    let filteredImages = IMAGE_SET;
+    if (filter.trim()) {
+      const matchingAnnotations = searchAnnotations(filter);
+      const matchingImageIds = new Set(matchingAnnotations.map(a => a.id));
+      filteredImages = IMAGE_SET.filter(item => matchingImageIds.has(item.id));
+    }
+    if (filteredImages.length === 0) {
+      grid.innerHTML = "<div style='font-size:13px;color:#888'>No matches</div>";
+      return;
+    }
+    filteredImages.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "thumb";
+      const ph = document.createElement("div");
+      ph.className = "placeholder";
+      ph.innerHTML = `<img src="${makePlaceholderSVG(600,400)}" alt="placeholder" style="width:100%;height:140px;object-fit:cover">`;
+      const img = document.createElement("img");
+      img.setAttribute("data-src", item.thumb);
+      img.dataset.src = item.thumb;
+      img.alt = item.title;
+      img.style.display = "none";
+      img.addEventListener("load", ()=>{ img.style.display="block"; ph.style.display="none"; });
+      img.addEventListener("click", ()=> openPreview(item));
+      const caption = document.createElement("div");
+      caption.className = "caption";
+      caption.textContent = item.title;
+      card.appendChild(ph); card.appendChild(img); card.appendChild(caption);
+      grid.appendChild(card);
+      observer.observe(card);
+    });
+  }
+
+  /* ---------- Preview modal & annotations ---------- */
+  let activeItem=null, drawing=false, start={x:0,y:0}, tempRect=null;
+  function openPreview(item){
+    activeItem=item;
+    modal.classList.add("active");
+    previewImg.src=makePlaceholderSVG(1200,800,"Loading image...");
+    const high=new Image();
+    high.src=item.src;
+    high.onload=()=>{ previewImg.src=item.src; renderAnnotationsForActive(); };
+    high.onerror=()=>{ previewImg.src=makePlaceholderSVG(1200,800,"Failed"); renderAnnotationsForActive(); };
+  }
+  closeModal.addEventListener("click", ()=> { modal.classList.remove("active"); clearTemp(); });
+  modal.addEventListener("click", e=>{ if(e.target===modal){ modal.classList.remove("active"); clearTemp(); } });
+  function clearTemp(){ if(tempRect){ tempRect.remove(); tempRect=null; drawing=false; } }
+  function getRelativeCoords(evt){
+    const rect=previewImg.getBoundingClientRect();
+    const x=Math.max(0,Math.min(rect.width,evt.clientX-rect.left));
+    const y=Math.max(0,Math.min(rect.height,evt.clientY-rect.top));
+    return {x,y,width:rect.width,height:rect.height};
+  }
+  function renderAnnotationsForActive(){
+    document.querySelectorAll(".annotation-rect").forEach(n=>n.remove());
+    document.querySelectorAll(".annotation-label").forEach(n=>n.remove());
+    annotationList.innerHTML="";
+    if(!activeItem) return;
+    const saved=annotations.filter(a=>a.id===activeItem.id);
+    saved.forEach((a)=>{ drawRectOnPreview(a); addAnnotationListRow(a); });
+  }
+  function drawRectOnPreview(a){
+    const wrap=document.getElementById("imageContainer");
+    const rect=document.createElement("div");
+    rect.className="annotation-rect";
+    rect.style.left=a.xPct+"%"; rect.style.top=a.yPct+"%";
+    rect.style.width=a.wPct+"%"; rect.style.height=a.hPct+"%";
+    wrap.appendChild(rect);
+    if(a.text){
+      const label=document.createElement("div");
+      label.className="annotation-label"; label.style.left=a.xPct+"%"; label.style.top=a.yPct+"%";
+      label.textContent=a.text; wrap.appendChild(label);
+    }
+  }
+  function addAnnotationListRow(a){
+    const row = document.createElement("div");
+    row.className="saved-item";
+    const textSpan = document.createElement("span");
+    textSpan.textContent = a.text ? a.text : "(rectangle)";
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "✏️";
+    editBtn.style.border="none"; editBtn.style.background="transparent"; editBtn.style.cursor="pointer"; editBtn.style.marginLeft="8px";
+    editBtn.onclick=()=>{ const nt=prompt("Edit annotation:", a.text||""); if(nt!==null){ a.text=nt.trim(); saveAnnotations(annotations); renderAnnotationsForActive(); } };
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "🗑️";
+    delBtn.style.border="none"; delBtn.style.background="transparent"; delBtn.style.cursor="pointer"; delBtn.style.marginLeft="6px";
+    delBtn.onclick=()=>{ if(confirm("Delete annotation?")){ annotations=annotations.filter(x=>x!==a); saveAnnotations(annotations); renderAnnotationsForActive(); } };
+    row.appendChild(textSpan); row.appendChild(editBtn); row.appendChild(delBtn);
+    annotationList.appendChild(row);
+  }
+  /* draw rectangle */
+  previewImg.addEventListener("mousedown", e=>{
+    if(!activeItem) return;
+    drawing=true;
+    const {x,y,width,height}=getRelativeCoords(e);
+    start={x,y,width,height};
+    tempRect=document.createElement("div");
+    tempRect.className="annotation-rect";
+    tempRect.style.left=(x/width*100)+"%"; tempRect.style.top=(y/height*100)+"%";
+    tempRect.style.width=0; tempRect.style.height=0;
+    document.getElementById("imageContainer").appendChild(tempRect);
+  });
+  previewImg.addEventListener("mousemove", e=>{
+    if(!drawing||!tempRect) return;
+    const {x,y,width,height}=getRelativeCoords(e);
+    const x0=start.x, y0=start.y;
+    const w=Math.abs(x-x0), h=Math.abs(y-y0);
+    const left=Math.min(x0,x), top=Math.min(y0,y);
+    tempRect.style.left=(left/width*100)+"%";
+    tempRect.style.top=(top/height*100)+"%";
+    tempRect.style.width=(w/width*100)+"%";
+    tempRect.style.height=(h/height*100)+"%";
+  });
+  previewImg.addEventListener("mouseup", e=>{
+    if(!drawing||!tempRect) return;
+    const {x,y,width,height}=getRelativeCoords(e);
+    const x0=start.x, y0=start.y;
+    const w=Math.abs(x-x0), h=Math.abs(y-y0);
+    const left=Math.min(x0,x), top=Math.min(y0,y);
+    if(w<10||h<10){ tempRect.remove(); tempRect=null; drawing=false; return; }
+    const text=prompt("Enter annotation text (optional):","");
+    const ann={ id:activeItem.id, xPct:left/width*100, yPct:top/height*100, wPct:w/width*100, hPct:h/height*100, text:text.trim() };
+    annotations.push(ann); saveAnnotations(annotations); renderAnnotationsForActive(); drawing=false; tempRect=null;
+  });
+  /* save text only */
+  saveTextBtn.addEventListener("click", ()=>{
+    const val=annotationText.value.trim();
+    if(!val||!activeItem) return;
+    const ann={ id:activeItem.id, xPct:2, yPct:96, wPct:0, hPct:0, text:val };
+    annotations.push(ann); saveAnnotations(annotations); annotationText.value=""; renderAnnotationsForActive();
+  });
+
+  /* ---------- Saved list page ---------- */
+  function renderSavedList(filter = "") {
+    const container = document.getElementById("savedList");
+    if (!container) { console.error("savedList element not found"); return; }
+    container.innerHTML = "";
+    let list = annotations;
+    if (filter.trim()) {
+      list = searchAnnotations(filter);
+    }
+    if (list.length === 0) { container.innerHTML = "<p>No annotations saved.</p>"; return; }
+    list.forEach((a, idx) => {
+      const item = document.createElement("div");
+      item.className = "saved-item";
+      const imgItem = IMAGE_SET.find(i => i.id === a.id);
+      const thumb = document.createElement("img");
+      thumb.src = imgItem ? imgItem.thumb : makePlaceholderSVG(60, 40, "No Image");
+      thumb.alt = imgItem ? imgItem.title : "No image";
+      thumb.style.width = "60px"; thumb.style.height = "40px"; thumb.style.objectFit = "cover"; thumb.style.borderRadius = "4px";
+      item.appendChild(thumb);
+      const info = document.createElement("span");
+      info.textContent = (a.text || "(rectangle)") + " — " + (imgItem ? imgItem.title : a.id);
+      const edit = document.createElement("button");
+      edit.textContent = "✏️"; edit.style.border = "none"; edit.style.background = "transparent"; edit.style.cursor = "pointer";
+      edit.onclick = () => { const nt = prompt("Edit annotation:", a.text || ""); if (nt !== null) { a.text = nt.trim(); saveAnnotations(annotations); renderSavedList(filter); } };
+      const del = document.createElement("button");
+      del.textContent = "🗑️"; del.style.border = "none"; del.style.background = "transparent"; del.style.cursor = "pointer";
+      del.onclick = () => { if (confirm("Delete annotation?")) { annotations = annotations.filter(x => x !== a); saveAnnotations(annotations); renderSavedList(filter); } };
+      item.appendChild(info); item.appendChild(edit); item.appendChild(del);
+      item.onclick = (e) => { if (e.target !== edit && e.target !== del) { const item = IMAGE_SET.find(i => i.id === a.id); if (item) openPreview(item); } };
+      container.appendChild(item);
+    });
+  }
+
+  /* ---------- Search ---------- */
+  function searchAnnotations(q) {
+    q = q.toLowerCase().trim();
+    console.log("Searching annotations with query:", q);
+    return annotations.filter(a => (a.text || "").toLowerCase().includes(q));
+  }
+
+  function renderSearchResults(q) {
+    const currentPage = pageTitle.innerText.toLowerCase();
+    if (currentPage === "saved") {
+      renderSavedList(q);
+    } else if (currentPage === "gallery") {
+      renderGallery(q);
+    } else {
+      const homeView = document.getElementById("homeView");
+      homeView.innerHTML = q.trim() ? "<div style='font-size:13px;color:#888'>No matches</div>" : `
+        <h4>Welcome</h4>
+        <p>Welcome to this interactive image annotation platform, designed to streamline your workflow with a clean and intuitive interface. Explore a curated collection of images, each available for detailed viewing and annotation to suit your needs.</p>
+        <p>The application offers a robust gallery feature, where you can browse images with efficient lazy loading to ensure smooth performance. Click any image to open a full-size preview, complete with tools to draw rectangular annotations or add text notes directly on the image.</p>
+        <p>All annotations are saved locally, allowing you to edit or delete them at any time. Use the search bar above to quickly find specific annotations, or navigate to the "Saved Annotations" section to review and manage your work. Customize your experience with light and dark themes for optimal comfort.</p>
+      `;
+    }
+  }
+
+  // Debounce function to limit search updates
+  function debounce(func, wait) {
+    let timeout;
+    return function (...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+  }
+
+  // Attach debounced search handlers
+  homeSearchBar.addEventListener("input", debounce(e => {
+    renderSearchResults(e.target.value);
+  }, 300));
+  gallerySearchBar.addEventListener("input", debounce(e => {
+    renderSearchResults(e.target.value);
+  }, 300));
+  savedSearchBar.addEventListener("input", debounce(e => {
+    renderSearchResults(e.target.value);
+  }, 300));
+
+  /* ---------- Theme ---------- */
+  document.getElementById("themeSwitch").addEventListener("click", () => {
+    const isDark = document.body.classList.toggle("dark");
+    const theme = isDark ? "dark" : "light";
+    saveTheme(theme);
+    updateThemeButton(theme);
+  });
+});
+</script>
+</body>
+</html>
